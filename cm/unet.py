@@ -270,7 +270,7 @@ class AttentionBlock(nn.Module):
         num_heads=1,
         num_head_channels=-1,
         use_checkpoint=False,
-        attention_type="flash",
+        attention_type="not_flash",
         encoder_channels=None,
         dims=2,
         channels_last=False,
@@ -341,7 +341,7 @@ class QKVFlashAttention(nn.Module):
         **kwargs,
     ) -> None:
         from einops import rearrange
-        from flash_attn.flash_attention import FlashAttention
+        #from flash_attn.flash_attention import FlashAttention
 
         assert batch_first
         factory_kwargs = {"device": device, "dtype": dtype}

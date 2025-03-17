@@ -118,20 +118,20 @@ def main():
 
 def create_argparser():
     defaults = dict(
-        training_mode="edm",
+        training_mode="consistency_distillation",
         generator="determ",
         clip_denoised=True,
-        num_samples=10000,
-        batch_size=16,
-        sampler="heun",
+        num_samples=32,
+        batch_size=32,
+        sampler="multistep",
         s_churn=0.0,
         s_tmin=0.0,
         s_tmax=float("inf"),
         s_noise=1.0,
         steps=40,
-        model_path="",
+        model_path="/home/onyxia/work/cd_bedroom256_lpips.pt",
         seed=42,
-        ts="",
+        ts="0,17,39",
     )
     defaults.update(model_and_diffusion_defaults())
     parser = argparse.ArgumentParser()

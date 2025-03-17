@@ -781,42 +781,32 @@ def iterative_inpainting(
     steps=40,
     generator=None,
 ):
-    from PIL import Image, ImageDraw, ImageFont
-
+    # Taille de l'image (supposée carrée)
     image_size = x.shape[-1]
+    square_size = 50  # taille du carré à masquer
+    # Création du masque : 1 partout, et 0 dans le carré central
+    mask_np = np.ones((image_size, image_size), dtype=np.float32)
+    start = (image_size - square_size) // 2
+    end = start + square_size
+    mask_np[start:end, start:end] = 0.0
+    # Dupliquer sur les 3 canaux
+    mask_np = np.stack([mask_np] * 3, axis=0)  # forme (3, H, W)
+    # Conversion en tensor et expansion sur le batch
+    B = x.shape[0]
+    mask_tensor = th.from_numpy(mask_np).to(x.device)
+    mask_tensor = mask_tensor.unsqueeze(0).expand(B, -1, -1, -1)  # forme (B, 3, H, W)
 
-    # create a blank image with a white background
-    img = Image.new("RGB", (image_size, image_size), color="white")
-
-    # get a drawing context for the image
-    draw = ImageDraw.Draw(img)
-
-    # load a font
-    font = ImageFont.truetype("arial.ttf", 250)
-
-    # draw the letter "C" in black
-    draw.text((50, 0), "S", font=font, fill=(0, 0, 0))
-
-    # convert the image to a numpy array
-    img_np = np.array(img)
-    img_np = img_np.transpose(2, 0, 1)
-    img_th = th.from_numpy(img_np).to(dist_util.dev())
-
-    mask = th.zeros(*x.shape, device=dist_util.dev())
-    mask = mask.reshape(-1, 7, 3, image_size, image_size)
-
-    mask[::2, :, img_th > 0.5] = 1.0
-    mask[1::2, :, img_th < 0.5] = 1.0
-    mask = mask.reshape(-1, 3, image_size, image_size)
-
+    # Fonction de remplacement qui impose le masque :
+    # Conserve la valeur de x0 là où mask=1, et force x1 là où mask=0.
     def replacement(x0, x1):
-        x_mix = x0 * mask + x1 * (1 - mask)
-        return x_mix
+        return x0 * mask_tensor + x1 * (1 - mask_tensor)
+
+    # Appliquer le masque sur les images d'entrée : dans les zones masquées, on fixe la valeur à -1 (noir en [-1, 1])
+    images = replacement(images, -th.ones_like(images))
 
     t_max_rho = t_max ** (1 / rho)
     t_min_rho = t_min ** (1 / rho)
     s_in = x.new_ones([x.shape[0]])
-    images = replacement(images, -th.ones_like(images))
 
     for i in range(len(ts) - 1):
         t = (t_max_rho + ts[i] / (steps - 1) * (t_min_rho - t_max_rho)) ** rho

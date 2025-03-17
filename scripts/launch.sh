@@ -90,3 +90,19 @@ mpiexec -n 8 python image_sample.py --batch_size 32 --training_mode consistency_
 
 ## Two-step sampling for CT on LSUN Cat-256
 mpiexec -n 8 python image_sample.py --batch_size 32 --training_mode consistency_distillation --sampler multistep --ts 0,62,150 --steps 151 --model_path /path/to/ct_cat256.pt --attention_resolutions 32,16,8 --class_cond False --use_scale_shift_norm False --dropout 0.0 --image_size 256 --num_channels 256 --num_head_channels 64 --num_res_blocks 2 --num_samples 500 --resblock_updown True --use_fp16 True --weight_schedule uniform
+
+## ~/work/consistency_models$ export PYTHONPATH="/home/onyxia/work/consistency_models:$PYTHONPATH"
+## sudo add-apt-repository universe  
+## sudo apt update 
+## sudo apt install libopenmpi-dev 
+## ~/work/consistency_models$ pip install mpi4py # prend 5 minutes
+## ~/work/consistency_models$ pip install -e . 
+## pip install einops 
+## export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True 
+## pip install matplotlib
+## ~/work/consistency_models/scripts$ python image_sample.py --batch_size 8 --training_mode consistency_distillation --sampler multistep --ts 0,17,39 --steps 40 --model_path /home/onyxia/work/cd_bedroom256_lpips.pt --attention_resolutions 32,16,8 --class_cond False --use_scale_shift_norm False --dropout 0.0 --image_size 256 --num_channels 256 --num_head_channels 64 --num_res_blocks 2 --num_samples 5 --resblock_updown True --use_fp16 False --weight_schedule uniform
+
+## python image_sample_inpainting.py --batch_size 7   --training_mode consistency_distillation   --sampler multistep   --ts 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40   --steps 40   --model_path /home/onyxia/work/checkpoints/cd_bedroom256_lpips.pt   --attention_resolutions 32,16,8 --class_cond False --use_scale_shift_norm False --dropout 0.0   --image_size 256 --num_channels 256 --num_head_channels 64 --num_res_blocks 2 --resblock_updown True --use_fp16 False --weight_schedule uniform
+
+
+###### python image_sample_inpainting.py --batch_size 7 --training_mode consistency_distillation --ts 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40 --steps 40 --model_path /home/onyxia/work/cd_bedroom256_lpips.pt --attention_resolutions 32,16,8 --class_cond False --use_scale_shift_norm False --dropout 0.0 --image_size 256 --num_channels 256 --num_head_channels 64 --num_res_blocks 2 --resblock_updown True --use_fp16 False --weight_schedule uniform
