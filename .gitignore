@@ -1,0 +1,27 @@
+# Ignorer les fichiers volumineux
+*.npz
+*.pt
+*.pkl
+*.h5
+*.ckpt
+*.zip
+*.tar
+*.tar.gz
+*.gz
+
+# Ignorer les fichiers spécifiques
+LSUN_bedroom_resized/
+flash-attention/
+consistency_models/results/
+visu_res.ipynb
+
+# Ignorer les fichiers temporaires
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+*.swp
+logs/
+*.log
+debug.log
